@@ -62,25 +62,44 @@ private:
     TimePoint _begin;
 };
 
+
+
+
 class StopWatch : public Timer
 {
 public:
+    StopWatch()
+    :Timer()
+    ,_begin(_checkpoints.begin())
+    {
+
+    }
     void split(CheckPoint && cp)
     {
         cp = high_resolution_clock::now();
         _checkpoints.push_back(cp);
+        _begin = _checkpoints.begin();
+        _end = _checkpoints.end();
     }
 
-    size_t size() {return _checkpoints.size() - 1;} //count num of ticks, not including the initial TimePoint;
-    size_t empty() {return _checkpoints.size()==1;}
+    size_t size() {return _checkpoints.size();} //count num of ticks, not including the initial TimePoint;
+    size_t empty() {return _checkpoints.size();}
 
     class iterator
     {
     public:
-        const iterator * operator->()     { return this;}
-        const iterator & operator++()     { _itor++; return (*this);}
+        iterator(){}
+        iterator(std::vector<CheckPoint>::iterator itor):_itor(itor){}
+
+        iterator * operator->()     { return this;}
+        iterator operator++()     { _itor++; return (*this);}
         const iterator & operator--()     { _itor--; return (*this);}
+        bool             operator!=(const iterator & rhs )     { return _itor!=rhs._itor;}
         CheckPoint timestamp() {return *_itor;}
+        void echo()
+        {
+            std::cout << "haha" << std::endl;
+        }
     private:
         std::vector<CheckPoint>::iterator _itor;
     };
